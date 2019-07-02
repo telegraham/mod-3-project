@@ -100,7 +100,7 @@ function over({ target, clientX, clientY }){
   const deltaX = clientX - lastMove.x;
   const deltaY = clientY - lastMove.y;
   let m = deltaY === 0 && deltaX === 0 ? 1 : deltaY / deltaX;
-  const d = deltaX > 0 ? 100 : -100;
+  const d = deltaX > 0 ? Math.random() * 50 + 100 : Math.random() * -50 - 100;
   const lastX = target.dataset.x || 0
   const lastY = target.dataset.y || 0
   if (m === Infinity) {
@@ -155,6 +155,31 @@ function stoppedPropagation(event) {
   throttledOver(event);
 }
 
+function rotateForm() {
+  ELEMENTS.querySelector(".js-auth")
+}
+
+function swing(target, backwards, currentDeg = 0, finalDeg = (97 * (backwards ? -1 : 1))) {
+  const difference = finalDeg - currentDeg;
+  const targetDeg = finalDeg + difference / 2;
+
+  target.style.transition = target.style.transition || `transform .6s 0s ease-in-out`;
+  target.style.transform = `rotate(${ targetDeg }deg)`;
+
+  const callback = () => {
+    target.removeEventListener("transitionend", callback)
+    if (!target.classList.contains("js-falling"))
+      swing(target, backwards, Math.round(targetDeg), finalDeg)
+  }
+  if (currentDeg !== finalDeg) target.addEventListener("transitionend", callback)
+}
+
+function fall(target) {
+  target.classList.add("js-falling")
+  target.style.transition = `transform 1s 0s ease-in`;
+  target.style.transform += `translateX(600px)`
+}
+
 document.addEventListener("DOMContentLoaded", function(){
   ELEMENTS.querySelector(".js-welcome").addEventListener("click", function(event){
     if (event.target.classList.contains("js-register")) {
@@ -174,7 +199,22 @@ document.addEventListener("DOMContentLoaded", function(){
   mover.addEventListener("mousemove", stoppedPropagation)
   mover.addEventListener("mouseover", throttledOver)
 
-  ELEMENTS.querySelector(".js-auth").addEventListener("submit", function(event){
+
+  const authForm = ELEMENTS.querySelector(".js-auth");
+  authForm.addEventListener("keydown", function(event){
+    if (event.key === "Enter" && event.target.classList.contains("auth__input")) {
+      event.preventDefault()
+      if (!event.target.classList.contains("js-fallen")) {
+        event.target.classList.add("js-fallen") 
+        swing(event.target, event.target.classList.contains("js-fallFlip"))
+      } else if (!authForm.classList.contains("js-bent")) {
+        authForm.classList.add("js-bent")
+      } else {
+        authForm.classList.add("js-fall");
+      }
+    }
+  })
+  authForm.addEventListener("submit", function(event){
     event.preventDefault()
     moveButton(mover, Math.random() * 200 - 100, Math.random() * 200 - 100)
   })

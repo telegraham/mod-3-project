@@ -17,6 +17,8 @@ body {
   font-family: "Helvetica", sans-serif;
   font-weight: 200;
   display: flex;
+  perspective: 500px;
+  overflow: hidden;
 }
 body, input, button {
   font-size: 48px;
@@ -143,4 +145,15 @@ button[type="submit"] {
   left: -20px;
   right: -20px;
   bottom: -20px;
+}
+.auth .auth__input--username.js-fallen {
+  transform-origin: bottom left;
+}
+.auth .auth__input--password.js-fallen {
+  transform-origin: bottom right;
+}
+.js-bent {
+  transform: rotateX(-10deg) rotateY(-10deg) rotateZ(-10deg) skew(-10deg, 10deg) scale(0.95);
+  transition: transform .1s ease-out;
+  transform-origin: bottom center;
 }
